@@ -37,7 +37,7 @@ The `preprocessing` folder contains all code relative to the data downloading+lo
 
 The `preprocess.py` file implements the preprocessing steps for the MFCC and the space filling curve approach (including random shifts+centering). The `representation.py` file implements the space filling curve mapping using mainly L-systems. All curves extend the abstract `Curve` class and implements the `build_curve` method.
 
-> The curves that are currently implemented are: Hilbert, Z, Gray, H, OptimalRSFC, Scan, Sweep, Diagonal.
+> The curves that are currently implemented are: Hilbert, Z, Gray, H, OptR, Scan, Sweep, Diagonal.
 
 The data itself (not preprocessed) is contained in the `data` folder, where each dataset (uncompress) is contained in a folder according to its name (the data should appear here once the code is run). The logs of the models are saved in the `lightning_logs` folder according to the following tree structure
 ```
