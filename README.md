@@ -1,5 +1,10 @@
 # Audio representation using space filling curves
 
+## Abstract
+
+Since convolutional neural networks (CNNs) have revolutionized the image processing field, they have been widely applied in the audio context. A common approach is to convert audio signals from time to frequency domain by applying the Fourier transform. However, the phase is often discarded in the Fourier decomposition. In this paper, we propose to map one-dimensional audio waveforms to two-dimensional images using space filling curves (SFCs). These mappings do not compress the input signal, while reducing the distance between indices. Moreover the mappings benefit from the progress made in deep learning and the large collection of existing computer vision networks.
+We test eight SFCs on two keyword spotting problems. We show that the Z curve yields the best results due to its shift equivariance under convolution operations. Additionally, the Z curve obtains comparable results to the widely used mel frequency cepstral coefficients across multiple CNNs.
+
 ## Setup
 <a name="setup"></a>
 
@@ -68,7 +73,7 @@ The jupyter notebook `audio_repr.ipynb` contains the code to produce the images 
 To train the model, simply execute the `run.py` file. For example,
 
 ```
-python run.py --lr 0.5 --pretrained True --name_curve Hilbert
+python run.py --lr 0.5 --patience 50 --name_curve Hilbert
 ```
 
 The commands are
