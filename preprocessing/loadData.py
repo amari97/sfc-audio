@@ -100,8 +100,7 @@ def load_LibriSpeechWord(path: str, type: str = "torch_dataloader", class_names:
     return train_set, validation_set, test_set
 
 
-def load_speech_commands(path: str, type: str = "torch_dataloader", class_names: List[str] = None,
-                         use_11: bool = False, batch_size: int = 1, preprocess: Callable = None,KFold=None, **kwargs: dict) -> Tuple[Union[np.array, torch.utils.data.DataLoader], Union[np.array, torch.utils.data.DataLoader], Union[np.array, torch.utils.data.DataLoader]]:
+def load_speech_commands(path: str, type: str = "torch_dataloader", class_names: List[str] = None, batch_size: int = 1, preprocess: Callable = None,KFold=None, **kwargs: dict) -> Tuple[Union[np.array, torch.utils.data.DataLoader], Union[np.array, torch.utils.data.DataLoader], Union[np.array, torch.utils.data.DataLoader]]:
     """
     Load speech commands dataset (either for pytorch or tensorflow)
     Args:
@@ -109,8 +108,6 @@ def load_speech_commands(path: str, type: str = "torch_dataloader", class_names:
         type (str): (default="torch_dataloader", cases: "torch_dataloader","torch_tensor","tf_tensor","tf_dataset") whether to use
                      pytorch dataloader or tensorflow dataset or torch/tf tensor
         class_names (list(str)): a (optional) list of the class names to use
-        use_11 (bool): boolean value to use classes "yes", "no", "up", "down", "left", "right", "on", "off", "stop", "go","unknown"
-                        (contains actually only 11 classes because we removed _background_noise_)
         preprocess (callable): (optional) take data,y, class_names, kwargs as argument and must return input,label pairs
         batch_size (int): batch size
         KFold (KFold object): specifies folds 
@@ -118,11 +115,11 @@ def load_speech_commands(path: str, type: str = "torch_dataloader", class_names:
     """
     if type.startswith("torch"):
         # iterator over the names of the files
-        train_set = SubsetSC(path, class_names, use_11,
+        train_set = SubsetSC(path, class_names,
                              "training", preprocess,KFold=KFold, **kwargs)
         validation_set = SubsetSC(
-            path, class_names, use_11, "validation", preprocess,KFold=KFold, **kwargs)
-        test_set = SubsetSC(path, class_names, use_11,
+            path, class_names, "validation", preprocess,KFold=KFold, **kwargs)
+        test_set = SubsetSC(path, class_names,
                             "testing", preprocess,KFold=KFold, **kwargs)
         if torch.cuda.is_available():
             num_workers = 12
@@ -170,7 +167,7 @@ def load_speech_commands(path: str, type: str = "torch_dataloader", class_names:
 
 
 def load_data(dataset: str, curve: Curve, preparation: Callable, transformation: Callable, use_fold: Union[Dict,bool] = None, folder: str = "data",
-              small: bool = False, sr: int = 16000, type: str = "torch_dataloader", length: int = 16000,K=10, snr=None, **kwargs):
+             sr: int = 16000, type: str = "torch_dataloader", length: int = 16000,K=10, snr=None, **kwargs):
     """
     Args:
         dataset (str): either speechcommands/librispeech
@@ -179,7 +176,6 @@ def load_data(dataset: str, curve: Curve, preparation: Callable, transformation:
         transformation (Callable): function applied to the input image
         use_fold (dict of lists or bool): defines folds to use for training/testing e.g. {"training":[1,2,3],"testing":[4]}
         folder (str): the main folder containing the data (default data)
-        small (bool): using a smaller version of the dataset (when possible) (default false)
         sr (int): sampling rate (default 16000)
         type (str): either torch_dataloader or torch_tensor
         length (int): the length of the audio sample (fixed)
@@ -191,7 +187,7 @@ def load_data(dataset: str, curve: Curve, preparation: Callable, transformation:
         # download data if needed and put it in folder/SpeechCommands/speech_commands_v0.02
         download_speech_commands(folder, url='speech_commands_v0.02')
         KFold=KF(K=K) if use_fold else None
-        train, val, test = load_speech_commands(folder, type=type, class_names=None, use_11=small,
+        train, val, test = load_speech_commands(folder, type=type, class_names=None,
                                                 preprocess=preparation, curve=curve, max_shift=int(
                                                     length/4),
                                                 kernel=gaussian_kernel(), transformation=transformation, sr=sr, length=length,KFold=KFold, **kwargs)

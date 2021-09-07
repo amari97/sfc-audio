@@ -26,7 +26,7 @@ def main(args,selected_model):
 
     # load the data
     train, val, test, KFold = loadData.load_data(curve=curve,preparation=preparation,transformation=transformation,
-                                use_fold=None,folder="data",small=False,**dict_args)
+                                use_fold=None,folder="data",**dict_args)
 
     class_names=train.class_names
     num_classes=len(class_names)

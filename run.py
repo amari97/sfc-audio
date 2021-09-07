@@ -29,7 +29,7 @@ def main(args,selected_model):
     transformation=None
     # load the data
     train, val, test,KFold = loadData.load_data(curve=curve,preparation=preparation,transformation=transformation,
-                                                folder="data",small=False,**dict_args)
+                                                folder="data",**dict_args)
     
     class_names=train.class_names
     num_classes=len(class_names)

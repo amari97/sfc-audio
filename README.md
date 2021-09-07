@@ -2,8 +2,9 @@
 
 ## Abstract
 
-Since convolutional neural networks (CNNs) have revolutionized the image processing field, they have been widely applied in the audio context. A common approach is to convert audio signals from time to frequency domain by applying the Fourier transform. However, the phase is often discarded in the Fourier decomposition. In this paper, we propose to map one-dimensional audio waveforms to two-dimensional images using space filling curves (SFCs). These mappings do not compress the input signal, while reducing the distance between indices. Moreover the mappings benefit from the progress made in deep learning and the large collection of existing computer vision networks.
-We test eight SFCs on two keyword spotting problems. We show that the Z curve yields the best results due to its shift equivariance under convolution operations. Additionally, the Z curve obtains comparable results to the widely used mel frequency cepstral coefficients across multiple CNNs.
+Since convolutional neural networks (CNNs) have revolutionized the image processing field, they have been widely applied in the audio context. A common approach is to convert audio signals from time to frequency domain by applying the Fourier transform. However, the phase is often discarded in the Fourier decomposition and the two axes (time, frequency) are semantically different from the horizontal and vertical axes of an image. We propose to map one-dimensional audio waveforms to two-dimensional images using space filling curves (SFCs). These are one-to-one mappings between one dimensional sequences and two dimensional grids. As such, these mappings do not compress the input signal, while reducing the distance between indices. Moreover the mappings benefit from the progress made in deep learning and the large collection of existing computer vision networks.
+
+In this repository, you will find the code to reproduce our results.
 
 ## Setup
 <a name="setup"></a>
@@ -34,38 +35,6 @@ conda activate test
 ```
 > You can use another name than `test` by changing the requirements.yml file. You can remove the environment by calling ```conda remove --name test --all```
 
-## Directory structure
-
-The code of the models is in the `models` folder. All models extend the class `BaseModel` defined in the `torch_model.py` file by redefining the forward pass (`_forward_impl` method). The `BaseModel` class implements a pytorch lightning module and defines the training/validation/test loops (mixup is defined here) and the optimization routine.
-
-The `preprocessing` folder contains all code relative to the data downloading+loading and data preprocessing (including the computation of audio representations such as MFCCs, SFC mappings). The `downloadData.py` file downloads and extracts the data in the `data` folder, if the files are not found (Note that `data/LibriSpeech/word_labels` folder must be downloaded manually [here](https://imperialcollegelondon.app.box.com/s/yd541e9qsmctknaj6ggj5k2cnb4mabkc?page=1)). `LibriSpeech.py` and `SpeechCommands.py` implement classes to load the corresponding dataset. `loadData.py` offers a simpler method to load the dataset as a torch.Tensor object or as a torch.utils.data.DataLoader object. The `KFold` class implemented in `Ksplit.py` splits the data into K folds and updates the training/validation set in the case of cross-validation each time the `update_folds` method is called. 
-
-The `preprocess.py` file implements the preprocessing steps for the MFCC and the space filling curve approach (including random shifts+centering). The `representation.py` file implements the space filling curve mapping using mainly L-systems. All curves extend the abstract `Curve` class and implements the `build_curve` method.
-
-> The curves that are currently implemented are: Hilbert, Z, Gray, H, OptR, Scan, Sweep, Diagonal.
-
-The data itself (not preprocessed) is contained in the `data` folder, where each dataset (uncompress) is contained in a folder according to its name (the data should appear here once the code is run). The logs of the models are saved in the `lightning_logs` folder according to the following tree structure
-```
-    ├──lightning_logs
-        ├── librispeech              # dataset name
-        │   ├── efficientnet         # model name
-        │   │   ├── mfcc             # method name
-        │   │   ├── sfc              # method name
-        │   │   │   ├── Hilbert      # curve name
-        │   │   │   ├── Z
-        │   │   │   └── ...  
-        │   ├── mixnet               # model name
-        │   │   ├── mfcc            
-        │   │   ├── sfc  
-        │   │   │   ├── Hilbert
-        │   │   │   ├── Z
-        │   │   │   └── ...  
-        │   ├── mobilenetv3          # model name
-        │   └── ...                  # etc.
-        └── ...
-```
-The results and weights of the models (*.ckpt files) are saved using the similar tree structure in the `results` folder.
-The jupyter notebook `audio_repr.ipynb` contains the code to produce the images and the figures are saved in the `figure` folder.
 
 ## Training
 <a name="training"></a>
@@ -81,7 +50,7 @@ The commands are
 * Training params:
     * `gpus`: number of GPUs (default all)
     * `batch_size`: batch size (default 256)
-    * `sgd`: whether to use sgd or AdamW (default True)
+    * `sgd`: whether to use sgd (True) or AdamW (default True)
     * `lr`: learning rate (default 0.005)
     * `weight_decay`: intensity of the weight decay (default 0.0)
     * `momentum`: specify the momentum of the optimization routine (as defined in torch.optim) (default 0.0)d
@@ -92,7 +61,7 @@ The commands are
 * Model params:
     * `model_name`: name of the model: mobilenetv3 (default), res8, squeezenet, shufflenet, mixnet, efficientnet
     * `method`: either mfcc or sfc (i.e. space filling curve, default)
-    * `name_curve`: name of the curve, either Hilbert (default), Z, Gray, OptR, H, Peano, Sweep, Scan, Diagonal
+    * `name_curve`: name of the curve, either Hilbert (default), Z, Gray, OptR, H, Sweep, Scan, Diagonal
     * `width_mult`: expand or reduce the number of channels of the model by the factor `width_mult` (default 1.0, must be positive)    
 * Data params:
     * `dataset`: the name of the dataset, either speechcommands (default), librispeech, urban8k, ESC50
@@ -146,6 +115,39 @@ The possible commands are:
     * `sr`: the sampling rate (default=16000)
 
 The commands should be the same as the ones used for the `run.py` file.
+
+## Directory structure
+
+The code of the models is in the `models` folder. All models extend the class `BaseModel` defined in the `torch_model.py` file by redefining the forward pass (`_forward_impl` method). The `BaseModel` class implements a pytorch lightning module and defines the training/validation/test loops (mixup is defined here) and the optimization routine.
+
+The `preprocessing` folder contains all code relative to the data downloading+loading and data preprocessing (including the computation of audio representations such as MFCCs, SFC mappings). The `downloadData.py` file downloads and extracts the data in the `data` folder, if the files are not found (Note that `data/LibriSpeech/word_labels` folder must be downloaded manually [here](https://imperialcollegelondon.app.box.com/s/yd541e9qsmctknaj6ggj5k2cnb4mabkc?page=1)). `LibriSpeech.py` and `SpeechCommands.py` implement classes to load the corresponding dataset. `loadData.py` offers a simpler method to load the dataset as a torch.Tensor object or as a torch.utils.data.DataLoader object. The `KFold` class implemented in `Ksplit.py` splits the data into K folds and updates the training/validation set in the case of cross-validation each time the `update_folds` method is called. 
+
+The `preprocess.py` file implements the preprocessing steps for the MFCC and the space filling curve approach (including random shifts+centering). The `representation.py` file implements the space filling curve mapping using mainly L-systems. All curves extend the abstract `Curve` class and implement the `build_curve` method.
+
+> The curves that are currently implemented are: Hilbert, Z, Gray, H, OptR, Scan, Sweep, Diagonal.
+
+The data itself (not preprocessed) is contained in the `data` folder, where each dataset (uncompress) is contained in a folder according to its name (the data should appear here once the code is run). The logs of the models are saved in the `lightning_logs` folder according to the following tree structure
+```
+    ├──lightning_logs
+        ├── librispeech              # dataset name
+        │   ├── efficientnet         # model name
+        │   │   ├── mfcc             # method name
+        │   │   ├── sfc              # method name
+        │   │   │   ├── Hilbert      # curve name
+        │   │   │   ├── Z
+        │   │   │   └── ...  
+        │   ├── mixnet               # model name
+        │   │   ├── mfcc            
+        │   │   ├── sfc  
+        │   │   │   ├── Hilbert
+        │   │   │   ├── Z
+        │   │   │   └── ...  
+        │   ├── mobilenetv3          # model name
+        │   └── ...                  # etc.
+        └── ...
+```
+The results and weights of the models (*.ckpt files) are saved using the similar tree structure in the `results` folder.
+The jupyter notebook `audio_repr.ipynb` contains the code to produce the images and the figures are saved in the `figure` folder.
 
 
 *Authors*: Alessandro Mari, Arash Salarian

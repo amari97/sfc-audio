@@ -86,12 +86,12 @@ def download_LibriSpeech(root: str,url: str = "train-clean-100",
             The top-level directory of the dataset. (default: ``"LibriSpeech"``)
     """
     if url == "all":
-        #download_LibriSpeech(root,"train-clean-100",folder_in_archive)
-        #download_LibriSpeech(root,"train-clean-360",folder_in_archive)
-        #download_LibriSpeech(root,"train-other-500",folder_in_archive)
-        #download_LibriSpeech(root,"dev-clean",folder_in_archive)
-        #download_LibriSpeech(root,"dev-other",folder_in_archive)
-        #download_LibriSpeech(root,"test-clean",folder_in_archive)
+        download_LibriSpeech(root,"train-clean-100",folder_in_archive)
+        download_LibriSpeech(root,"train-clean-360",folder_in_archive)
+        download_LibriSpeech(root,"train-other-500",folder_in_archive)
+        download_LibriSpeech(root,"dev-clean",folder_in_archive)
+        download_LibriSpeech(root,"dev-other",folder_in_archive)
+        download_LibriSpeech(root,"test-clean",folder_in_archive)
         download_LibriSpeech(root,"test-other",folder_in_archive)
         return
     if url in [
